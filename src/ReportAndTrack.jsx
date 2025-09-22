@@ -39,40 +39,34 @@ function ReportAndTrack({ onReportSubmit, onTrackReport }) {
   // ✅ NEW: Function to get user's current location
   const handleGetLocation = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const long = position.coords.longitude;
-          setFormData((prev) => ({
-            ...prev,
-            locationCoords: { latitude: lat, longitude: long },
-          }));
-                 setNotification({ message: 'Location captured successfully!', type: 'success' });
-
-          setTimeout(() => {
-            document.body.removeChild(messageBox);
-          }, 2000);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          const messageBox = document.createElement('div');
-          let errorMessage = "Could not get your location. Please ensure location services are enabled.";
-          if (error.code === 1) {
-            errorMessage = "Location access denied. Please enable it in your browser settings.";
-          }
-         setNotification({ message: errorMessage, type: 'error' });
-          setTimeout(() => {
-            document.body.removeChild(messageBox);
-          }, 3000);
-        }
-      );
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const long = position.coords.longitude;
+                setFormData((prev) => ({
+                    ...prev,
+                    locationCoords: { latitude: lat, longitude: long },
+                }));
+                // ✅ CORRECT: Only use the state-based notification
+                setNotification({ message: 'Location captured successfully!', type: 'success' });
+                setTimeout(() => setNotification({ message: '', type: '' }), 2000); // Hide after 2 seconds
+            },
+            (error) => {
+                let errorMessage = "Could not get your location. Please ensure location services are enabled.";
+                if (error.code === 1) {
+                    errorMessage = "Location access denied. Please enable it in your browser settings.";
+                }
+                // ✅ CORRECT: Only use the state-based notification
+                setNotification({ message: errorMessage, type: 'error' });
+                setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+            }
+        );
     } else {
-      setNotification({ message: "Geolocation is not supported by your browser.", type: 'error' });
-      setTimeout(() => {
-        document.body.removeChild(messageBox);
-      }, 3000);
+        // ✅ CORRECT: Only use the state-based notification
+        setNotification({ message: "Geolocation is not supported by your browser.", type: 'error' });
+        setTimeout(() => setNotification({ message: '', type: '' }), 3000);
     }
-  };
+};
 
   const closePopup = () => {
   setPopupReport(null);
