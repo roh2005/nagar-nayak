@@ -7,6 +7,7 @@ import StatusCounter from './StatusCounter';
 import Weather from './Weather';
 import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
+import GovernmentSchemes from './GovernmentSchemes';
 
 const statusStyles = {
   reported: { color: '#d32f2f', fontWeight: 'bold' },
@@ -93,7 +94,7 @@ function HowItWorks() {
   );
 }
 
-function LatestIssues({ issues, onUpvote, onIssueClick }) {
+function LatestIssues({ issues, onUpvote, onDownvote, onIssueClick }) {
   const statusStyles = {
     reported: { color: '#d32f2f', fontWeight: 'bold' },
     'in progress': { color: '#f9a825', fontWeight: 'bold' },
@@ -251,7 +252,7 @@ return (
         <div style={carouselWrapperStyle}> 
       <div ref={carouselRef} style={carouselInnerStyle}> 
         {/* Make sure to destructure the 'upvotes' and 'onUpvote' props */}
-{issuesToRender.map(({ id, description, location, status, image, upvotes, category }, index) => (
+{issuesToRender.map(({ id, description, location, status, image, upvotes,  downvotes, category }, index) => (
     <div key={`${id}-${index}`} style={issueCardStyle} onClick={() => onIssueClick(id)}>
             <img src={image} alt={description} style={issueImageStyle} />
             <div style={issueContentStyle}>
@@ -265,18 +266,17 @@ return (
   {status}
 </span>
               {/* ✅ ADD THE NEW UPVOTE CODE HERE */}
-              <div style={upvoteSectionStyle}>
-                <span>Upvotes: {upvotes}</span>
-                <button 
-        onClick={(event) => {
-          event.stopPropagation(); // Stops the click from bubbling up
-          onUpvote(id);
-        }} 
-        style={upvoteButtonStyle}
-      >
-          👍
-      </button>
-              </div>
+             <div style={upvoteSectionStyle}>
+  <div style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+    <span>{upvotes}</span>
+    <button onClick={(event) => { event.stopPropagation(); onUpvote(id); }} style={upvoteButtonStyle}>👍</button>
+  </div>
+  {/* ✅ NEW: Add the downvote button */}
+  <div style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+    <span>{downvotes}</span>
+    <button onClick={(event) => { event.stopPropagation(); onDownvote(id); }} style={{...upvoteButtonStyle, backgroundColor: '#FFCDD2', borderColor: '#D32F2F', color: '#D32F2F'}}>👎</button>
+  </div>
+</div>
             </div>
           </div>
         ))}
@@ -341,6 +341,7 @@ const handleNewReportSubmit = (newReport) => {
     {
       ...newReport,
       upvotes: 0, // ✅ Add this line to initialize upvotes
+        downvotes: 0, 
       comments: [], // ✅ Add this line to initialize an empty comments array
     allottedAuthority: 'Municipal Corporation of Hyderabad', // Placeholder for the authority name
       contactNumber: '9701560948',    // Placeholder for their contact number
@@ -353,6 +354,15 @@ const handleUpvote = (reportId) => {
   setReports((prevReports) =>
     prevReports.map((report) =>
       report.id === reportId ? { ...report, upvotes: report.upvotes + 1 } : report
+    )
+  );
+};
+
+
+const handleDownvote = (reportId) => {
+  setReports((prevReports) =>
+    prevReports.map((report) =>
+      report.id === reportId ? { ...report, downvotes: report.downvotes + 1 } : report
     )
   );
 };
@@ -453,6 +463,7 @@ const handleTrackReport = (id) => {
       <LatestIssues
         issues={reports}
         onUpvote={handleUpvote}
+         onDownvote={handleDownvote}
         onIssueClick={handleIssueClick}
       />
 
@@ -464,6 +475,7 @@ const handleTrackReport = (id) => {
       <StatusCounter label="In Progress" count={calculateStatusCounts()['in progress']} />
       <StatusCounter label="Resolved" count={calculateStatusCounts().resolved} />
     </div>
+     <GovernmentSchemes />
     </>
   )}
 
