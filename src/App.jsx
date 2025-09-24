@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import indiaMapLightGreen from './assets/india_map_light_green.png';
 import ReportAndTrack from './ReportAndTrack';
 import ReportDetail from './ReportDetail';
@@ -8,6 +9,8 @@ import Weather from './Weather';
 import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
 import GovernmentSchemes from './GovernmentSchemes';
+import LanguageSwitcher from './LanguageSwitcher';
+
 
 const statusStyles = {
   reported: { color: '#d32f2f', fontWeight: 'bold' },
@@ -293,7 +296,7 @@ function App() {
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   
-  
+ 
   // ✅ LIFTED STATE: Initializing state from local storage on first render
 const [reports, setReports] = useState(() => {
   try {
@@ -407,16 +410,15 @@ const handleTrackReport = (id) => {
   const formattedTime = currentTime.toLocaleTimeString();
   const formattedDate = currentTime.toLocaleDateString();
 
-  const handleLogin = () => setIsLoggedIn(true);
-  const handleLogout = () => setIsLoggedIn(false);
+
 
   const navButtons = [
-    { key: 'home', label: 'Home' },
-    { key: 'report_track', label: 'Report & Track' },
-    { key: 'awareness', label: 'Awareness' },
-    { key: 'about_us', label: 'About Us' },
-    { key: 'contact_us', label: 'Contact Us' },
-  ];
+  { key: 'home', label: 'Home' },
+  { key: 'report_track', label: 'Report & Track' },
+  { key: 'awareness', label: 'Awareness' },
+  { key: 'about_us', label: 'About Us' },
+  { key: 'contact_us', label: 'Contact Us' },
+];
 
   return (
     <div style={mainContainerStyle}>
@@ -425,6 +427,7 @@ const handleTrackReport = (id) => {
           <a href="/" style={logoLinkStyle}>Nagar Nayak</a>
         </div>
         <div style={headerRightSectionStyle}>
+            <LanguageSwitcher />
           <div style={dateTimeStyle}>
             <div>{formattedDate}</div>
             <div>{formattedTime}</div>
